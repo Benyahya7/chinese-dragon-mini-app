@@ -286,7 +286,22 @@ try {
 } catch(e) {
   document.getElementById('authStatus').textContent = 'Google sign-in is unavailable right now — ordering still works signed out.';
 }
-function googleSignIn(){ try { firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); } catch(e){ alert('Google sign-in failed. Please try again, or order signed out.'); } }
+function googleSignIn(){
+  // Popups are blocked inside Telegram's in-app browser and many mobile
+  // browsers — that is the usual "sign-in not working" here. Try a popup
+  // first (normal browsers), and fall back to a full-page redirect.
+  try {
+    firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){
+      try { firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); }
+      catch(e2){ alert('Google sign-in failed (' + (e2.code || 'unknown') + '). Please try again, or order signed out.'); }
+    });
+  } catch(e) {
+    try { firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); }
+    catch(e2){ alert('Google sign-in failed. Please try again, or order signed out.'); }
+  }
+}
+// Handle the return from a redirect sign-in (Telegram / mobile browsers).
+try { if (FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && window.firebase) { firebase.auth().getRedirectResult().catch(function(){}); } } catch(e){}
 function googleSignOut(){ try { firebase.auth().signOut(); } catch(e){} }
 function saveOrderToFirebase(payload){
   if (!fbUser || !fbDb) return;

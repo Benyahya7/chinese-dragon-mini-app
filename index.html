@@ -3,6 +3,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Chinese Dragon — East Boston | Menu & Order</title>
 <meta name="description" content="Chinese Dragon (東方紅), 380 Chelsea Street, East Boston. Mandarin, Szechuan and Hong Kong cuisine. Daily 10:30 AM – 3:00 AM. Takeout and delivery."/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<meta name="theme-color" content="#a6192e"/>
+<link rel="apple-touch-icon" href="icons/icon-180.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -403,5 +408,12 @@ function dragonSend(){
   }
   dragonBot('I don\'t have that in the menu info here — try a dish name, "spicy", "delivery", or "hours". For a deeper AI chat, tap <a href="https://t.me/Chinese_dragon_boston_bot" target="_blank" rel="noopener">Dragon AI in Telegram</a>, or call (617) 569-0300.', true);
 }
+// PWA: register the service worker (guarded — Telegram's in-app browser
+// may not support it, and that must never break the app itself).
+try {
+  if ('serviceWorker' in navigator && !(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData)) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+} catch(e){}
 renderSig(); render(); saveCart(); renderCartBar();
 </script></body></html>
